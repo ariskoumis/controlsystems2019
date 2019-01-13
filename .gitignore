@@ -6,3 +6,5 @@ sdkconfig
 **/*.d
 **/build
 xtensa-esp32-elf/
+**/.DS_Store
+.vscode
