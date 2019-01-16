@@ -27,18 +27,59 @@ void initServer(AsyncWebServer* server, ParamsStruct* params) {
         Note: for ANY parameters you want to use, you must add them to
         the paramsStruct struct located in Source.h first. 
     */
+
+
     server->on("/handle_update", HTTP_POST, [=](AsyncWebServerRequest *request){
-        strcpy(params->mode, request->arg("mode").c_str());
-        params->wheel_1_speed = request->arg("wheel_1_speed");
-        params->wheel_1_heading = request->arg("wheel_1_heading");
-        params->wheel_2_speed = request->arg("wheel_2_speed");
-        params->wheel_2_heading = request->arg("wheel_2_heading");
-        params->wheel_3_speed = request->arg("wheel_3_speed");
-        params->wheel_3_heading = request->arg("wheel_3_heading");
-        params->brake = request->arg("brake");
+        const char *vars[8] = {
+            "mode", "wheel_1_speed", "wheel_1_heading", "wheel_2_speed", 
+            "wheel_2_heading", "wheel_3_speed", "wheel_3_heading", "brake"
+        };
+
+        for (int i=0; i<8; i++) {
+            if (request->hasArg(vars[i])) {
+                if (strcmp(vars[i], "mode")) {
+                    strcpy(params->mode, request->arg("mode").c_str());  
+                }
+                if (strcmp(vars[i], "wheel_1_speed")) {
+                    params->wheel_1_speed = request->arg("wheel_1_speed").toInt();    
+                }
+                if (strcmp(vars[i], "wheel_1_heading")) {
+                    params->wheel_1_heading = request->arg("wheel_1_heading").toInt();    
+                }
+                if (strcmp(vars[i], "wheel_2_speed")) {
+                    params->wheel_2_speed = request->arg("wheel_2_speed").toInt();    
+                }
+                if (strcmp(vars[i], "wheel_2_heading")) {
+                    params->wheel_2_heading = request->arg("wheel_2_heading").toInt();    
+                }
+                if (strcmp(vars[i], "wheel_3_speed")) {
+                    params->wheel_3_speed = request->arg("wheel_3_speed").toInt();    
+                }
+                if (strcmp(vars[i], "wheel_3_heading")) {
+                    params->wheel_3_heading = request->arg("wheel_3_heading").toInt();    
+                }
+                if (strcmp(vars[i], "brake")) {
+                    params->brake = (bool) request->arg("brake").toInt();    
+                }
+            }
+            else {
+                printf("ERROR. %s doesn't exist", vars[i]);
+            }
+        }
+        
+        printf("handle_update endpoint running\n");
+        printf("    mode: %s \n", params->mode);
+        printf("    wheel_1_speed: %i \n", params->wheel_1_speed);
+        printf("    wheel_1_heading: %i \n", params->wheel_1_heading);
+        printf("    wheel_2_speed: %i \n", params->wheel_2_speed);
+        printf("    wheel_2_heading: %i \n", params->wheel_2_heading);
+        printf("    wheel_3_speed: %i \n", params->wheel_3_speed);
+        printf("    wheel_3_heading: %i \n", params->wheel_3_heading);
+        printf("    brake: %i \n", params->brake);
+        printf("\n");
+
         request->send(200, "text/plain", "Success");
     });
-    
     
     /* SSE Example.
         - SSEs will be used to continuously send data that was
